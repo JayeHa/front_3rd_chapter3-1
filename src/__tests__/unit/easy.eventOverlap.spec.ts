@@ -1,5 +1,10 @@
 import { Event } from '../../types';
-import { convertEventToDateRange, isOverlapping, parseDateTime } from '../../utils/eventOverlap';
+import {
+  convertEventToDateRange,
+  findOverlappingEvents,
+  isOverlapping,
+  parseDateTime,
+} from '../../utils/eventOverlap';
 
 describe('parseDateTime', () => {
   it('2024-07-01 14:30을 정확한 Date 객체로 변환한다', () => {
@@ -121,7 +126,75 @@ describe('isOverlapping', () => {
 });
 
 describe('findOverlappingEvents', () => {
-  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {});
+  const 새로운이벤트: Event = {
+    id: '1',
+    title: '새로운 회의',
+    date: '2024-10-15',
+    startTime: '09:00',
+    endTime: '10:00',
+    description: '팀 미팅',
+    location: '회의실 B',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 10,
+  };
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {});
+  const 안겹치는이벤트: Event = {
+    id: '5',
+    title: '안 겹치는 회의',
+    date: '2024-10-15',
+    startTime: '13:00',
+    endTime: '14:00',
+    description: '팀 미팅',
+    location: '회의실 B',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 10,
+  };
+
+  const events: Event[] = [
+    {
+      id: '2',
+      title: '겹치는 회의',
+      date: '2024-10-15',
+      startTime: '09:30',
+      endTime: '10:30',
+      description: '팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+    {
+      id: '3',
+      title: '또 겹치는 회의',
+      date: '2024-10-15',
+      startTime: '09:20',
+      endTime: '09:50',
+      description: '팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+    {
+      id: '4',
+      title: '계속 겹치는 회의',
+      date: '2024-10-15',
+      startTime: '08:30',
+      endTime: '09:30',
+      description: '팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ];
+  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
+    expect(findOverlappingEvents(새로운이벤트, events)).toEqual(events);
+  });
+
+  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+    expect(findOverlappingEvents(안겹치는이벤트, events)).toEqual([]);
+  });
 });
