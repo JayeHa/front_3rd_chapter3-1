@@ -4,6 +4,12 @@ import { Event } from '../types.ts';
  * 주어진 년도와 월의 일수를 반환합니다.
  */
 export function getDaysInMonth(year: number, month: number): number {
+  if (!Number.isInteger(month) || month < 1 || month > 12) {
+    throw new Error(
+      `유효하지 않은 월입니다. month 값은 1에서 12 사이의 정수여야 합니다. 입력한 값: ${month}`
+    );
+  }
+
   return new Date(year, month, 0).getDate();
 }
 

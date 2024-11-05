@@ -1,26 +1,37 @@
-import { Event } from '../../types';
+// import { Event } from '../../types';
 import {
-  fillZero,
-  formatDate,
-  formatMonth,
-  formatWeek,
+  // fillZero,
+  // formatDate,
+  // formatMonth,
+  // formatWeek,
   getDaysInMonth,
-  getEventsForDay,
-  getWeekDates,
-  getWeeksAtMonth,
-  isDateInRange,
 } from '../../utils/dateUtils';
 
 describe('getDaysInMonth', () => {
-  it('1월은 31일 수를 반환한다', () => {});
+  it('1월은 31일 수를 반환한다', () => {
+    expect(getDaysInMonth(2024, 1)).toBe(31);
+  });
 
-  it('4월은 30일 일수를 반환한다', () => {});
+  it('4월은 30일 일수를 반환한다', () => {
+    expect(getDaysInMonth(2024, 4)).toBe(30);
+  });
 
-  it('윤년의 2월에 대해 29일을 반환한다', () => {});
+  it('윤년의 2월에 대해 29일을 반환한다', () => {
+    expect(getDaysInMonth(2024, 2)).toBe(29);
+  });
 
-  it('평년의 2월에 대해 28일을 반환한다', () => {});
+  it('평년의 2월에 대해 28일을 반환한다', () => {
+    expect(getDaysInMonth(2025, 2)).toBe(28);
+  });
 
-  it('유효하지 않은 월에 대해 적절히 처리한다', () => {});
+  it('유효하지 않은 월에 대해 적절히 처리한다', () => {
+    const errorMessage = (month: number) =>
+      `유효하지 않은 월입니다. month 값은 1에서 12 사이의 정수여야 합니다. 입력한 값: ${month}`;
+
+    expect(() => getDaysInMonth(2024, 1.1)).toThrowError(errorMessage(1.1));
+    expect(() => getDaysInMonth(2024, 13)).toThrowError(errorMessage(13));
+    expect(() => getDaysInMonth(2024, 0)).toThrowError(errorMessage(0));
+  });
 });
 
 describe('getWeekDates', () => {
