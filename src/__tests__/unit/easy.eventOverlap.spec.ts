@@ -1,4 +1,4 @@
-import { parseDateTime } from '../../utils/eventOverlap';
+import { convertEventToDateRange, parseDateTime } from '../../utils/eventOverlap';
 
 describe('parseDateTime', () => {
   it('2024-07-01 14:30을 정확한 Date 객체로 변환한다', () => {
@@ -19,11 +19,56 @@ describe('parseDateTime', () => {
 });
 
 describe('convertEventToDateRange', () => {
-  it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {});
+  it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {
+    expect(
+      convertEventToDateRange({
+        id: '1',
+        title: '기존 회의',
+        date: '2024-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      })
+    ).toEqual({ start: new Date('2024-10-15T09:00'), end: new Date('2024-10-15T10:00') });
+  });
 
-  it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {});
+  it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
+    expect(
+      convertEventToDateRange({
+        id: '2',
+        title: '잘못된 날짜 이벤트',
+        date: '2024-11-0',
+        startTime: '12:30',
+        endTime: '13:30',
+        description: '잘못된 날짜의 이벤트',
+        location: '회사 근처 식당',
+        category: '개인',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      })
+    ).toEqual({ start: new Date(NaN), end: new Date(NaN) });
+  });
 
-  it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {});
+  it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
+    expect(
+      convertEventToDateRange({
+        id: '2',
+        title: '잘못된 시간 이벤트',
+        date: '2024-11-1',
+        startTime: '12:300',
+        endTime: '13:30',
+        description: '잘못된 시간의 이벤트',
+        location: '회사 근처 식당',
+        category: '개인',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      })
+    ).toEqual({ start: new Date(NaN), end: new Date('2024-11-1T13:30') });
+  });
 });
 
 describe('isOverlapping', () => {
