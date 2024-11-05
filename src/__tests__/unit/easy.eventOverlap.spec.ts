@@ -1,4 +1,5 @@
-import { convertEventToDateRange, parseDateTime } from '../../utils/eventOverlap';
+import { Event } from '../../types';
+import { convertEventToDateRange, isOverlapping, parseDateTime } from '../../utils/eventOverlap';
 
 describe('parseDateTime', () => {
   it('2024-07-01 14:30을 정확한 Date 객체로 변환한다', () => {
@@ -72,9 +73,51 @@ describe('convertEventToDateRange', () => {
 });
 
 describe('isOverlapping', () => {
-  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {});
+  const events: Event[] = [
+    {
+      id: '1',
+      title: '기존 회의',
+      date: '2024-10-15',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+    {
+      id: '2',
+      title: '겹치는 회의',
+      date: '2024-10-15',
+      startTime: '09:30',
+      endTime: '10:30',
+      description: '팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+    {
+      id: '3',
+      title: '안 겹치는 회의',
+      date: '2024-10-15',
+      startTime: '10:00',
+      endTime: '12:00',
+      description: '팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ];
+  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {
+    expect(isOverlapping(events[0], events[1])).toBe(true);
+  });
 
-  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {});
+  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
+    expect(isOverlapping(events[0], events[2])).toBe(false);
+  });
 });
 
 describe('findOverlappingEvents', () => {
