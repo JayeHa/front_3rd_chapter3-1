@@ -65,6 +65,16 @@ export function getEventsForDay(events: Event[], date: number): Event[] {
   return events.filter((event) => new Date(event.date).getDate() === date);
 }
 
+/**
+ * 주어진 날짜에 해당하는 연도, 월, 주 번호를 포맷하여 문자열로 반환합니다.
+ *
+ * 주 번호는 해당 날짜가 포함된 주를 기준으로 하며, 주의 기준은 목요일입니다.
+ *
+ * - 주의 첫 번째 날은 목요일로 간주되며, 가장 가까운 목요일을 기준으로 주가 계산됩니다.
+ * - 주어진 날짜가 속한 주의 첫 번째 목요일을 기준으로 주 번호가 정해집니다.
+ * - 예를 들어, 2024년 11월 1일은 금요일이지만, 10월 31일 목요일이 포함된 주에 속하므로
+ *   "2024년 10월 5주"로 반환됩니다.
+ */
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
   const diffToThursday = 4 - dayOfWeek;
