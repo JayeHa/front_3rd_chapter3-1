@@ -29,6 +29,9 @@ export function getWeekDates(date: Date): Date[] {
   return weekDates;
 }
 
+/**
+ * 주어진 날짜가 속한 달의 모든 날짜를 주 단위로 반환합니다.
+ */
 export function getWeeksAtMonth(currentDate: Date) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();

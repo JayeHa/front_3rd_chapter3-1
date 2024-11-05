@@ -6,6 +6,7 @@ import {
   // formatWeek,
   getDaysInMonth,
   getWeekDates,
+  getWeeksAtMonth,
 } from '../../utils/dateUtils';
 
 describe('getDaysInMonth', () => {
@@ -143,7 +144,16 @@ describe('getWeekDates', () => {
 });
 
 describe('getWeeksAtMonth', () => {
-  it('2024년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {});
+  it('2024년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {
+    const 주_단위_날짜_정보 = [
+      [null, 1, 2, 3, 4, 5, 6],
+      [7, 8, 9, 10, 11, 12, 13],
+      [14, 15, 16, 17, 18, 19, 20],
+      [21, 22, 23, 24, 25, 26, 27],
+      [28, 29, 30, 31, null, null, null],
+    ];
+    expect(getWeeksAtMonth(new Date('2024-7-1'))).toEqual(주_단위_날짜_정보);
+  });
 });
 
 describe('getEventsForDay', () => {
