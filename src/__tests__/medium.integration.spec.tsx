@@ -1,9 +1,12 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
-import { ReactElement } from 'react';
 
-import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
+import {
+  setupMockHandlerCreation,
+  setupMockHandlerDeletion,
+  setupMockHandlerUpdating,
+} from '../__mocks__/handlersUtils';
 import App from '../App';
 import { Event } from '../types';
 import { generateTestEvent } from './utils';
@@ -13,37 +16,55 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  vi.setSystemTime(new Date('2024-11-01T09:00'));
+  vi.setSystemTime(new Date('2024-10-15T09:00'));
 });
 
 afterAll(() => {
   vi.useRealTimers();
 });
 
-// ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
-const setup = (element: ReactElement) => {
+const setup = () => {
   const user = userEvent.setup();
 
-  return { ...render(<ChakraProvider>{element}</ChakraProvider>), user }; // ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
+  return {
+    ...render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    ),
+    user,
+  }; // ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
 };
 
 // ! HINT. 이 유틸을 사용해 일정을 저장해보세요.
 const saveSchedule = async (
   user: UserEvent,
-  form: Omit<Event, 'id' | 'notificationTime' | 'repeat'>
+  form: Omit<Event, 'id' | 'notificationTime' | 'repeat'>,
+  isEdit?: boolean
 ) => {
   const { title, date, startTime, endTime, location, description, category } = form;
 
-  await user.click(screen.getAllByText('일정 추가')[0]);
+  await user.click(screen.getAllByText(isEdit ? '일정 수정' : '일정 추가')[0]);
 
+  await user.clear(screen.getByLabelText('제목'));
   await user.type(screen.getByLabelText('제목'), title);
-  await user.type(screen.getByLabelText('날짜'), date);
-  await user.type(screen.getByLabelText('시작 시간'), startTime);
-  await user.type(screen.getByLabelText('종료 시간'), endTime);
-  await user.type(screen.getByLabelText('설명'), description);
-  await user.type(screen.getByLabelText('위치'), location);
-  await user.selectOptions(screen.getByLabelText('카테고리'), category);
 
+  await user.clear(screen.getByLabelText('날짜'));
+  await user.type(screen.getByLabelText('날짜'), date);
+
+  await user.clear(screen.getByLabelText('시작 시간'));
+  await user.type(screen.getByLabelText('시작 시간'), startTime);
+
+  await user.clear(screen.getByLabelText('종료 시간'));
+  await user.type(screen.getByLabelText('종료 시간'), endTime);
+
+  await user.clear(screen.getByLabelText('설명'));
+  await user.type(screen.getByLabelText('설명'), description);
+
+  await user.clear(screen.getByLabelText('위치'));
+  await user.type(screen.getByLabelText('위치'), location);
+
+  await user.selectOptions(screen.getByLabelText('카테고리'), category);
   await user.click(screen.getByTestId('event-submit-button'));
 };
 
@@ -52,12 +73,12 @@ describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     setupMockHandlerCreation();
-    const { user, getByTestId } = setup(<App />);
+    const { user, getByTestId } = setup();
 
     const newEvent = generateTestEvent({
       id: '1',
       title: '팀 회의',
-      date: '2024-11-01',
+      date: '2024-10-15',
       description: '팀 회의에 대한 설명',
       location: '회의실',
     });
@@ -68,9 +89,41 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(within(eventList).getByText(newEvent.title)).toBeInTheDocument();
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    setupMockHandlerUpdating();
+    const { user, getByTestId, findByTestId } = setup();
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+    const eventItem = await findByTestId('event-item-1');
+    const $editButton = eventItem.querySelector('[aria-label="Edit event"]');
+    await userEvent.click($editButton!);
+
+    const newEvent = generateTestEvent({
+      id: '1',
+      title: '새로운 회의',
+      date: '2024-10-15',
+      description: '새로운 팀 미팅',
+      location: '회의실',
+    });
+
+    await saveSchedule(user, newEvent, true);
+
+    const eventList = getByTestId('event-list');
+    expect(within(eventList).getByText('새로운 회의')).toBeInTheDocument();
+  });
+
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    setupMockHandlerDeletion();
+    const { findByTestId } = setup();
+
+    const eventList = await findByTestId('event-list');
+    expect(within(eventList).getByText('삭제할 이벤트')).toBeInTheDocument();
+
+    const eventItem = await findByTestId('event-item-1');
+    const $deleteButton = eventItem.querySelector('[aria-label="Delete event"]');
+    await userEvent.click($deleteButton!);
+
+    expect(within(eventList).queryByText('삭제할 이벤트')).not.toBeInTheDocument();
+  });
 });
 
 describe('일정 뷰', () => {
