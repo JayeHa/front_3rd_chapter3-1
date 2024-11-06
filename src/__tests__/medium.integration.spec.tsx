@@ -9,7 +9,7 @@ import {
 } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { Event } from '../types';
-import { generateTestEvent } from './utils';
+import { generateTestEvent, generateTestEvents } from './utils';
 
 beforeAll(() => {
   vi.useFakeTimers();
@@ -127,15 +127,91 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    const initEvents = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-10-30',
+        description: '팀 회의에 대한 설명',
+        location: '회의실',
+      },
+    ];
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    setupMockHandlerCreation(generateTestEvents(initEvents));
+    const { user, findByTestId } = setup();
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    const eventList = await findByTestId('event-list');
+    expect(within(eventList).getByText(initEvents[0].title)).toBeInTheDocument();
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
+    expect(within(eventList).queryByText(initEvents[0].title)).not.toBeInTheDocument();
+  });
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    const initEvents = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-10-15',
+        description: '팀 회의에 대한 설명',
+        location: '회의실',
+      },
+    ];
+
+    setupMockHandlerCreation(generateTestEvents(initEvents));
+    const { user, findByTestId } = setup();
+
+    const eventList = await findByTestId('event-list');
+    expect(within(eventList).getByText(initEvents[0].title)).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
+    expect(within(eventList).getByText(initEvents[0].title)).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    const initEvents = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-11-01',
+        description: '팀 회의에 대한 설명',
+        location: '회의실',
+      },
+    ];
+
+    setupMockHandlerCreation(generateTestEvents(initEvents));
+    const { findByTestId } = setup();
+
+    const eventList = await findByTestId('event-list');
+    expect(within(eventList).queryByText(initEvents[0].title)).not.toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    const initEvents = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-10-30',
+        description: '팀 회의에 대한 설명',
+        location: '회의실',
+      },
+    ];
+
+    setupMockHandlerCreation(generateTestEvents(initEvents));
+    const { findByTestId } = setup();
+
+    const eventList = await findByTestId('event-list');
+    expect(within(eventList).getByText(initEvents[0].title)).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    vi.setSystemTime(new Date('2024-01-01'));
+    setupMockHandlerCreation();
+    const { container } = setup();
+
+    expect(within(container).getByText('신정')).toBeInTheDocument();
+  });
 });
 
 describe('검색 기능', () => {
