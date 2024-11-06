@@ -133,8 +133,6 @@ describe('일정 뷰', () => {
         id: '1',
         title: '팀 회의',
         date: '2024-10-30',
-        description: '팀 회의에 대한 설명',
-        location: '회의실',
       },
     ];
 
@@ -154,8 +152,6 @@ describe('일정 뷰', () => {
         id: '1',
         title: '팀 회의',
         date: '2024-10-15',
-        description: '팀 회의에 대한 설명',
-        location: '회의실',
       },
     ];
 
@@ -175,8 +171,6 @@ describe('일정 뷰', () => {
         id: '1',
         title: '팀 회의',
         date: '2024-11-01',
-        description: '팀 회의에 대한 설명',
-        location: '회의실',
       },
     ];
 
@@ -193,8 +187,6 @@ describe('일정 뷰', () => {
         id: '1',
         title: '팀 회의',
         date: '2024-10-30',
-        description: '팀 회의에 대한 설명',
-        location: '회의실',
       },
     ];
 
@@ -215,11 +207,76 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    const initEvents = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-10-30',
+      },
+    ];
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    setupMockHandlerCreation(generateTestEvents(initEvents));
+    const { user, getByPlaceholderText, findByTestId } = setup();
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    await user.type(getByPlaceholderText('검색어를 입력하세요'), '잘못된 검색어');
+    const eventList = await findByTestId('event-list');
+
+    expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const initEvents = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-10-30',
+      },
+      {
+        id: '1',
+        title: '점심 식사',
+        date: '2024-10-30',
+      },
+    ];
+
+    setupMockHandlerCreation(generateTestEvents(initEvents));
+    const { user, getByPlaceholderText, findByTestId } = setup();
+
+    await user.type(getByPlaceholderText('검색어를 입력하세요'), '팀 회의');
+    const eventList = await findByTestId('event-list');
+
+    expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
+    expect(within(eventList).queryByText('점심 식사')).not.toBeInTheDocument();
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    const initEvents = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-10-30',
+      },
+      {
+        id: '1',
+        title: '점심 식사',
+        date: '2024-10-30',
+      },
+    ];
+
+    setupMockHandlerCreation(generateTestEvents(initEvents));
+    const { user, getByPlaceholderText, findByTestId } = setup();
+
+    await user.type(getByPlaceholderText('검색어를 입력하세요'), '팀 회의');
+    const eventList = await findByTestId('event-list');
+
+    expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
+    expect(within(eventList).queryByText('점심 식사')).not.toBeInTheDocument();
+
+    await user.clear(getByPlaceholderText('검색어를 입력하세요'));
+
+    expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
+    expect(within(eventList).getByText('점심 식사')).toBeInTheDocument();
+  });
 });
 
 describe('일정 충돌', () => {
