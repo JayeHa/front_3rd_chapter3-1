@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 
 import {
@@ -280,9 +280,78 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    const existingEvent = generateTestEvent({
+      id: '1',
+      title: '팀 회의',
+      date: '2024-10-15',
+      startTime: '10:00',
+      endTime: '11:00',
+    });
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    setupMockHandlerCreation(generateTestEvents([existingEvent]));
+    const { user } = setup();
+
+    // 충돌하는 새로운 일정 추가
+    const conflictingEvent = generateTestEvent({
+      id: '2',
+      title: '겹치는 일정',
+      date: '2024-10-15',
+      startTime: '10:30', // 기존 일정과 겹침
+      endTime: '11:30',
+      location: '회의실 B',
+      description: '겹치는 일정에 대한 설명',
+    });
+
+    await saveSchedule(user, conflictingEvent);
+
+    expect(screen.getByText(/일정 겹침 경고/)).toBeInTheDocument();
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    setupMockHandlerUpdating();
+    const { user, findByTestId } = setup();
+
+    const eventItem = await findByTestId('event-item-1');
+    const $editButton = eventItem.querySelector('[aria-label="Edit event"]');
+    await userEvent.click($editButton!);
+
+    const conflictingEvent = generateTestEvent({
+      id: '1',
+      title: '겹치는 회의',
+      date: '2024-10-15',
+      startTime: '11:30', // 기존 일정과 겹침
+      endTime: '12:00',
+      location: '회의실 B',
+      description: '겹치는 일정에 대한 설명',
+    });
+
+    await saveSchedule(user, conflictingEvent, true);
+
+    expect(screen.getByText(/일정 겹침 경고/)).toBeInTheDocument();
+  });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  vi.setSystemTime(new Date('2024-10-15T09:00'));
+  const event = generateTestEvent({
+    id: '1',
+    title: '팀 회의',
+    date: '2024-10-15',
+    startTime: '09:10',
+    endTime: '11:00',
+    notificationTime: 10,
+  });
+
+  setupMockHandlerCreation([event]);
+  const { getByText } = setup();
+
+  await waitFor(
+    () => {
+      expect(
+        getByText(`${event.notificationTime}분 후 ${event.title} 일정이 시작됩니다.`)
+      ).toBeInTheDocument();
+    },
+    { timeout: 2000 }
+  );
+});
