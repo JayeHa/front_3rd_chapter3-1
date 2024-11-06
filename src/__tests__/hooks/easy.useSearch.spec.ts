@@ -5,10 +5,10 @@ import { useSearch } from '../../hooks/useSearch.ts';
 import { Event } from '../../types.ts';
 import { generateTestEvents } from '../utils.ts';
 
-const currentDate = new Date('2024-11-1');
-
-const setup = (events: Event[], view: 'week' | 'month' = 'month') =>
-  renderHook(() => useSearch(events, currentDate, view));
+const setup = (events: Event[], view: 'week' | 'month' = 'month') => {
+  const currentDate = new Date('2024-11-1');
+  return renderHook(() => useSearch(events, currentDate, view));
+};
 
 it('검색어가 비어있을 때 모든 이벤트를 반환해야 한다', () => {
   const events = generateTestEvents([
