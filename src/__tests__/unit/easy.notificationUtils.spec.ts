@@ -1,5 +1,5 @@
-import { getUpcomingEvents } from '../../utils/notificationUtils';
-import { generateTestEvents } from '../utils';
+import { createNotificationMessage, getUpcomingEvents } from '../../utils/notificationUtils';
+import { generateTestEvent, generateTestEvents } from '../utils';
 
 describe('getUpcomingEvents', () => {
   const now = new Date('2024-11-06T08:50');
@@ -90,5 +90,14 @@ describe('getUpcomingEvents', () => {
 });
 
 describe('createNotificationMessage', () => {
-  it('올바른 알림 메시지를 생성해야 한다', () => {});
+  it('올바른 알림 메시지를 생성해야 한다', () => {
+    const event = generateTestEvent({
+      id: '1',
+      title: '회의',
+      date: '2024-11-06',
+      notificationTime: 20,
+    });
+
+    expect(createNotificationMessage(event)).toBe('20분 후 회의 일정이 시작됩니다.');
+  });
 });
