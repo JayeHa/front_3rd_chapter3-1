@@ -1,17 +1,24 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
-import {
-  setupMockHandlerCreation,
-  setupMockHandlerDeletion,
-  setupMockHandlerUpdating,
-} from '../__mocks__/handlersUtils';
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
 import { Event } from '../types';
+import { generateTestEvent } from './utils';
+
+beforeAll(() => {
+  vi.useFakeTimers();
+});
+
+beforeEach(() => {
+  vi.setSystemTime(new Date('2024-11-01T09:00'));
+});
+
+afterAll(() => {
+  vi.useRealTimers();
+});
 
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
 const setup = (element: ReactElement) => {
@@ -44,6 +51,21 @@ const saveSchedule = async (
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    setupMockHandlerCreation();
+    const { user, getByTestId } = setup(<App />);
+
+    const newEvent = generateTestEvent({
+      id: '1',
+      title: '팀 회의',
+      date: '2024-11-01',
+      description: '팀 회의에 대한 설명',
+      location: '회의실',
+    });
+
+    await saveSchedule(user, newEvent);
+
+    const eventList = getByTestId('event-list');
+    expect(within(eventList).getByText(newEvent.title)).toBeInTheDocument();
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
