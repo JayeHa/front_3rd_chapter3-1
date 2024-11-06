@@ -49,8 +49,6 @@ describe('convertEventToDateRange', () => {
           id: '1',
           title: '잘못된 날짜 이벤트',
           date: '2024-11-0', // 잘못된 날짜 형식
-          startTime: '12:30',
-          endTime: '13:30',
         })
       )
     ).toEqual({ start: new Date(NaN), end: new Date(NaN) });

@@ -12,9 +12,18 @@ export const parseHM = (timestamp: number) => {
   return `${h}:${m}`;
 };
 
-type BaseEvent = Pick<Event, 'id' | 'title' | 'date' | 'startTime' | 'endTime'>;
+type BaseEvent = Pick<Event, 'id' | 'title' | 'date'>;
 type OptionalEventProperties = Partial<
-  Pick<Event, 'description' | 'location' | 'category' | 'repeat' | 'notificationTime'>
+  Pick<
+    Event,
+    | 'startTime'
+    | 'endTime'
+    | 'description'
+    | 'location'
+    | 'category'
+    | 'repeat'
+    | 'notificationTime'
+  >
 >;
 
 type TestEvent = BaseEvent & OptionalEventProperties;
@@ -23,11 +32,10 @@ export const generateTestEvent = ({
   id,
   title,
   date,
-  startTime,
-  endTime,
-
-  description,
-  location,
+  startTime = '09:00',
+  endTime = '10:00',
+  description = '',
+  location = '',
   category = '업무',
   repeat = { type: 'none', interval: 0 },
   notificationTime = 10,
@@ -38,8 +46,8 @@ export const generateTestEvent = ({
     date,
     startTime,
     endTime,
-    description: description ?? `이벤트 ${id} 입니다.`,
-    location: location ?? `이벤트 ${id}의 장소`,
+    description,
+    location,
     category,
     repeat,
     notificationTime,
