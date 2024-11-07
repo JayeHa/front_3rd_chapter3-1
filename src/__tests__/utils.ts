@@ -29,8 +29,19 @@ type OptionalEventProperties = Partial<
 type TestEvent = BaseEvent & OptionalEventProperties;
 
 /**
- * 테스트용 이벤트를 생성하기 위한 헬퍼 함수입니다.
- * 기본값을 사용하여 이벤트를 쉽게 만들 수 있습니다.
+ * 테스트 이벤트를 생성하는 헬퍼 함수입니다.
+ * 필요한 속성만 제공하면 기본값을 사용하여 이벤트 객체를 쉽게 생성할 수 있습니다.
+ *
+ * @example
+ * 아래와 같이 필수 값만 제공하여 이벤트를 생성할 수 있습니다.
+ * 필요하지 않은 속성은 생략하면 기본값이 적용됩니다.
+ *
+ * const event = generateTestEvent({
+ *   id: '1',
+ *   title: '이벤트',
+ *   date: '2024-01-01',
+ * });
+ *
  */
 export const generateTestEvent = ({
   id,
