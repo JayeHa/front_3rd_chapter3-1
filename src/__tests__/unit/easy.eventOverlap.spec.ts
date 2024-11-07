@@ -43,29 +43,28 @@ describe('convertEventToDateRange', () => {
   });
 
   it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
-    expect(
-      convertEventToDateRange(
-        generateTestEvent({
-          id: '1',
-          title: '잘못된 날짜 이벤트',
-          date: '2024-11-0', // 잘못된 날짜 형식
-        })
-      )
-    ).toEqual({ start: new Date(NaN), end: new Date(NaN) });
+    const event = generateTestEvent({
+      id: '1',
+      title: '잘못된 날짜 이벤트',
+      date: '2024-11-0', // 잘못된 날짜 형식
+    });
+
+    expect(convertEventToDateRange(event)).toEqual({ start: new Date(NaN), end: new Date(NaN) });
   });
 
   it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
-    expect(
-      convertEventToDateRange(
-        generateTestEvent({
-          id: '2',
-          title: '잘못된 시간 이벤트',
-          date: '2024-11-1',
-          startTime: '12:300', // 잘못된 시간 형식
-          endTime: '13:30',
-        })
-      )
-    ).toEqual({ start: new Date(NaN), end: new Date('2024-11-1T13:30') });
+    const event = generateTestEvent({
+      id: '2',
+      title: '잘못된 시간 이벤트',
+      date: '2024-11-1',
+      startTime: '12:300', // 잘못된 시간 형식
+      endTime: '13:30',
+    });
+
+    expect(convertEventToDateRange(event)).toEqual({
+      start: new Date(NaN),
+      end: new Date('2024-11-1T13:30'),
+    });
   });
 });
 

@@ -1,4 +1,3 @@
-import { Event } from '../../types';
 import {
   fillZero,
   formatDate,
@@ -10,6 +9,7 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
+import { generateTestEvents } from '../utils';
 
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {
@@ -151,71 +151,72 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
-  const events: Event[] = [
-    {
-      id: '1',
-      title: '팀 회의',
-      date: '2024-11-1',
-      startTime: '10:00',
-      endTime: '11:00',
-      description: '주간 팀 미팅',
-      location: '회의실 A',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 1,
-    },
-    {
-      id: '2',
-      title: '점심 약속',
-      date: '2024-11-2',
-      startTime: '12:30',
-      endTime: '13:30',
-      description: '동료와 점심 식사',
-      location: '회사 근처 식당',
-      category: '개인',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 1,
-    },
-    {
-      id: '3',
-      title: '잘못된 날짜 이벤트',
-      date: '2024-11-0',
-      startTime: '12:30',
-      endTime: '13:30',
-      description: '잘못된 날짜의 이벤트',
-      location: '회사 근처 식당',
-      category: '개인',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 1,
-    },
-    {
-      id: '4',
-      title: '잘못된 날짜 이벤트',
-      date: '2024-11-32',
-      startTime: '12:30',
-      endTime: '13:30',
-      description: '잘못된 날짜의 이벤트',
-      location: '회사 근처 식당',
-      category: '개인',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 1,
-    },
-  ];
-
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
+    const events = generateTestEvents([
+      {
+        id: '1',
+        title: '특정 날짜의 이벤트',
+        date: '2024-11-1',
+      },
+      {
+        id: '2',
+        title: '점심 약속',
+        date: '2024-11-2',
+      },
+    ]);
+
     const expectedEvent = events[0];
     expect(getEventsForDay(events, 1)).toEqual([expectedEvent]);
   });
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
-    expect(getEventsForDay(events, 12)).toEqual([]);
+    const events = generateTestEvents([
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-11-1',
+      },
+      {
+        id: '2',
+        title: '점심 약속',
+        date: '2024-11-2',
+      },
+    ]);
+
+    expect(getEventsForDay(events, 3)).toEqual([]);
   });
 
   it('날짜가 0일 경우 빈 배열을 반환한다', () => {
+    const events = generateTestEvents([
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-11-1',
+      },
+      {
+        id: '2',
+        title: '잘못된 날짜 이벤트',
+        date: '2024-11-0',
+      },
+    ]);
+
     expect(getEventsForDay(events, 0)).toEqual([]);
   });
 
   it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
+    const events = generateTestEvents([
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2024-11-1',
+      },
+      {
+        id: '2',
+        title: '잘못된 날짜 이벤트',
+        date: '2024-11-32',
+      },
+    ]);
+
     expect(getEventsForDay(events, 32)).toEqual([]);
   });
 });

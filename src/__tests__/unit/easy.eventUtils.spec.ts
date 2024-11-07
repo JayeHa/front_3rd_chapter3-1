@@ -2,58 +2,104 @@ import { getFilteredEvents } from '../../utils/eventUtils';
 import { generateTestEvents } from '../utils';
 
 describe('getFilteredEvents', () => {
-  const events = generateTestEvents([
-    {
-      id: '0',
-      title: '0번째',
-      date: '2024-07-01',
-    },
-    {
-      id: '1',
-      title: '이벤트 1',
-      date: '2024-07-02',
-    },
-    {
-      id: '2',
-      title: '이벤트 2',
-      date: '2024-07-03',
-    },
-    {
-      id: '3',
-      title: '이벤트 3',
-      date: '2024-07-21',
-    },
-    {
-      id: '4',
-      title: '이벤트 4',
-      date: '2024-08-02',
-    },
-  ]);
-
   it("검색어 '이벤트 2'에 맞는 이벤트만 반환한다", () => {
+    const events = generateTestEvents([
+      {
+        id: '1',
+        title: '이벤트 1',
+        date: '2024-07-02',
+      },
+      {
+        id: '2',
+        title: '이벤트 2',
+        date: '2024-07-03',
+      },
+    ]);
+
     expect(getFilteredEvents(events, '이벤트 2', new Date('2024-07-01'), 'month')).toEqual([
-      events[2],
+      events[1],
     ]);
   });
 
   it('주간 뷰에서 2024-07-01 주의 이벤트만 반환한다', () => {
+    const events = generateTestEvents([
+      {
+        id: '1',
+        title: '2024-07-01 주의 이벤트 1',
+        date: '2024-07-02',
+      },
+      {
+        id: '2',
+        title: '2024-07-01 주의 이벤트 2',
+        date: '2024-07-03',
+      },
+      {
+        id: '3',
+        title: '이벤트 3',
+        date: '2024-07-21',
+      },
+      {
+        id: '4',
+        title: '이벤트 4',
+        date: '2024-08-02',
+      },
+    ]);
+
     expect(getFilteredEvents(events, '', new Date('2024-07-01'), 'week')).toEqual([
       events[0],
       events[1],
-      events[2],
     ]);
   });
 
   it('월간 뷰에서 2024년 7월의 모든 이벤트를 반환한다', () => {
+    const events = generateTestEvents([
+      {
+        id: '1',
+        title: '2024년 7월 이벤트 1',
+        date: '2024-07-02',
+      },
+      {
+        id: '2',
+        title: '2024년 7월 이벤트 2',
+        date: '2024-07-21',
+      },
+      {
+        id: '3',
+        title: '이벤트 3',
+        date: '2024-08-02',
+      },
+    ]);
+
     expect(getFilteredEvents(events, '', new Date('2024-07-01'), 'month')).toEqual([
       events[0],
       events[1],
-      events[2],
-      events[3],
     ]);
   });
 
   it("검색어 '이벤트'와 주간 뷰 필터링을 동시에 적용한다", () => {
+    const events = generateTestEvents([
+      {
+        id: '0',
+        title: '검색어 없는 2024-07-01주의 일정',
+        date: '2024-07-01',
+      },
+      {
+        id: '1',
+        title: '2024-07-01 주의 이벤트 1',
+        date: '2024-07-02',
+      },
+      {
+        id: '2',
+        title: '2024-07-01 주의 이벤트 2',
+        date: '2024-07-03',
+      },
+      {
+        id: '3',
+        title: '07-01 주에 속하지 않는 이벤트',
+        date: '2024-07-21',
+      },
+    ]);
+
     expect(getFilteredEvents(events, '이벤트', new Date('2024-07-01'), 'week')).toEqual([
       events[1],
       events[2],
@@ -61,33 +107,51 @@ describe('getFilteredEvents', () => {
   });
 
   it('검색어가 없을 때 모든 이벤트를 반환한다', () => {
-    expect(getFilteredEvents(events, '', new Date('2024-07-01'), 'month')).toEqual([
-      events[0],
-      events[1],
-      events[2],
-      events[3],
+    const events = generateTestEvents([
+      {
+        id: '0',
+        title: '검색어 없는 2024-07-01주의 일정',
+        date: '2024-07-01',
+      },
+      {
+        id: '1',
+        title: '2024-07-01 주의 이벤트 1',
+        date: '2024-07-02',
+      },
+      {
+        id: '2',
+        title: '2024-07-01 주의 이벤트 2',
+        date: '2024-07-03',
+      },
+      {
+        id: '3',
+        title: '07-01 주에 속하지 않는 이벤트',
+        date: '2024-07-21',
+      },
     ]);
+
+    expect(getFilteredEvents(events, '', new Date('2024-07-01'), 'month')).toEqual(events);
   });
 
   it('검색어가 대소문자를 구분하지 않고 작동한다', () => {
     const englishEvents = generateTestEvents([
       {
-        id: '1',
+        id: '소문자',
         title: 'event 1',
         date: '2024-07-01',
       },
       {
-        id: '2',
+        id: '카멜케이스',
         title: 'Event 2',
         date: '2024-07-02',
       },
       {
-        id: '3',
+        id: '대문자',
         title: 'EVENT 3',
         date: '2024-07-03',
       },
       {
-        id: '4',
+        id: '일부 문자',
         title: 'ev 4',
         date: '2024-07-04',
       },
