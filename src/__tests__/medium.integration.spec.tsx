@@ -338,12 +338,11 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
   setupMockHandlerCreation([event]);
   const { getByText } = setup();
 
-  await waitFor(
-    () => {
-      expect(
-        getByText(`${event.notificationTime}분 후 ${event.title} 일정이 시작됩니다.`)
-      ).toBeInTheDocument();
-    },
-    { timeout: 2000 }
-  );
+  vi.advanceTimersByTime(999);
+
+  await waitFor(() => {
+    expect(
+      getByText(`${event.notificationTime}분 후 ${event.title} 일정이 시작됩니다.`)
+    ).toBeInTheDocument();
+  });
 });
