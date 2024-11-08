@@ -12,10 +12,11 @@ import { useSearch } from './hooks/useSearch.ts';
 import { useEventFormStore } from './store/useEventFormStore.ts';
 
 function App() {
-  const { editingEvent, setEditingEvent, editEvent } = useEventFormStore();
+  const { editingEvent, resetEditingEvent, editEvent } = useEventFormStore();
 
-  const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
-    setEditingEvent(null)
+  const { events, saveEvent, deleteEvent } = useEventOperations(
+    Boolean(editingEvent),
+    resetEditingEvent
   );
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
