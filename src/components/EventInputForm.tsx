@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 
+import { notificationOptions } from '../constants/notification';
 import { useEventFormStore } from '../store/useEventFormStore';
 import { Event, EventForm, RepeatType } from '../types';
 import { findOverlappingEvents } from '../utils/eventOverlap';
@@ -26,10 +27,6 @@ type Props = {
   setOverlappingEvents: React.Dispatch<React.SetStateAction<Event[]>>;
   setIsOverlapDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   saveEvent: (eventData: Event | EventForm) => Promise<void>;
-  notificationOptions: {
-    value: number;
-    label: string;
-  }[];
 };
 
 export const EventInputForm = ({
@@ -37,7 +34,6 @@ export const EventInputForm = ({
   saveEvent,
   setIsOverlapDialogOpen,
   setOverlappingEvents,
-  notificationOptions,
 }: Props) => {
   const {
     eventForm: {
