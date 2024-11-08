@@ -21,3 +21,6 @@ export interface EventForm {
 export interface Event extends EventForm {
   id: string;
 }
+
+// ----
+export type Notification = { id: string; message: string };
