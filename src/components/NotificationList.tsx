@@ -20,6 +20,7 @@ export const NotificationList = ({ notifications, setNotifications }: Props) => 
                 <AlertTitle fontSize="sm">{notification.message}</AlertTitle>
               </Box>
               <CloseButton
+                data-testid="close-button"
                 onClick={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
               />
             </Alert>
