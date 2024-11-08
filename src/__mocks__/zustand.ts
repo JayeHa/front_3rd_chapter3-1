@@ -1,3 +1,9 @@
+/**
+ * Vitest 환경에서 Zustand 스토어를 모킹하기 위한 설정입니다.
+ * 이 설정을 통해 테스트 시 Zustand 스토어의 초기 상태를 유지하고, 테스트 후 상태를 리셋할 수 있습니다.
+ *
+ * @see https://zustand.docs.pmnd.rs/guides/testing#vitest
+ */
 import { act } from '@testing-library/react';
 import type * as ZustandExportedTypes from 'zustand';
 export * from 'zustand';
