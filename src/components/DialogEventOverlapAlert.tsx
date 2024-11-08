@@ -8,25 +8,17 @@ import {
   Button,
   Text,
 } from '@chakra-ui/react';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 
 import { useEventFormStore } from '../store/useEventFormStore';
+import { useEventOverlapStore } from '../store/useEventOverlapStore';
 import { Event, EventForm } from '../types';
 
 type Props = {
-  isOverlapDialogOpen: boolean;
-  setIsOverlapDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  overlappingEvents: Event[];
-
   saveEvent: (eventData: Event | EventForm) => Promise<void>;
 };
 
-export const DialogEventOverlapAlert = ({
-  isOverlapDialogOpen,
-  setIsOverlapDialogOpen,
-  overlappingEvents,
-  saveEvent,
-}: Props) => {
+export const DialogEventOverlapAlert = ({ saveEvent }: Props) => {
   const {
     eventForm: {
       title,
@@ -45,12 +37,10 @@ export const DialogEventOverlapAlert = ({
 
   const cancelRef = useRef<HTMLButtonElement>(null);
 
+  const { isOverlapDialogOpen, overlappingEvents, closeDialog } = useEventOverlapStore();
+
   return (
-    <AlertDialog
-      isOpen={isOverlapDialogOpen}
-      leastDestructiveRef={cancelRef}
-      onClose={() => setIsOverlapDialogOpen(false)}
-    >
+    <AlertDialog isOpen={isOverlapDialogOpen} leastDestructiveRef={cancelRef} onClose={closeDialog}>
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -68,13 +58,13 @@ export const DialogEventOverlapAlert = ({
           </AlertDialogBody>
 
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
+            <Button ref={cancelRef} onClick={closeDialog}>
               취소
             </Button>
             <Button
               colorScheme="red"
               onClick={() => {
-                setIsOverlapDialogOpen(false);
+                closeDialog();
                 saveEvent({
                   id: editingEvent ? editingEvent.id : undefined,
                   title,

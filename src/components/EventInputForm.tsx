@@ -11,30 +11,22 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import React from 'react';
 
 import { notificationOptions } from '../constants/notification';
 import { useEventFormStore } from '../store/useEventFormStore';
+import { useEventOverlapStore } from '../store/useEventOverlapStore';
 import { Event, EventForm, RepeatType } from '../types';
 import { findOverlappingEvents } from '../utils/eventOverlap';
 import { getTimeErrorMessage } from '../utils/timeValidation';
 
 const categories = ['업무', '개인', '가족', '기타'];
 
-// TODO: 나중에 정리
 type Props = {
   events: Event[];
-  setOverlappingEvents: React.Dispatch<React.SetStateAction<Event[]>>;
-  setIsOverlapDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   saveEvent: (eventData: Event | EventForm) => Promise<void>;
 };
 
-export const EventInputForm = ({
-  events,
-  saveEvent,
-  setIsOverlapDialogOpen,
-  setOverlappingEvents,
-}: Props) => {
+export const EventInputForm = ({ events, saveEvent }: Props) => {
   const {
     eventForm: {
       title,
@@ -57,6 +49,8 @@ export const EventInputForm = ({
   } = useEventFormStore();
 
   const toast = useToast();
+
+  const { openDialog } = useEventOverlapStore();
 
   const addOrUpdateEvent = async () => {
     if (!title || !date || !startTime || !endTime) {
@@ -98,8 +92,7 @@ export const EventInputForm = ({
 
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
-      setIsOverlapDialogOpen(true);
+      openDialog(overlapping);
     } else {
       await saveEvent(eventData);
       resetForm();

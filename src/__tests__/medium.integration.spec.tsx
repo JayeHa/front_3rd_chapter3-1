@@ -8,6 +8,7 @@ import {
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
 import App from '../App';
+import { useEventOverlapStore } from '../store/useEventOverlapStore';
 import { Event } from '../types';
 import { generateTestEvent, generateTestEvents } from './utils';
 
@@ -272,6 +273,13 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
+  beforeEach(() => {
+    useEventOverlapStore.setState({
+      isOverlapDialogOpen: false,
+      overlappingEvents: [],
+    });
+  });
+
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     const existingEvent = generateTestEvent({
       id: '1',
