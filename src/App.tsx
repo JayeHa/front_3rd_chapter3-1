@@ -19,7 +19,7 @@ function App() {
     resetEditingEvent
   );
 
-  const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
+  const { notifications, notifiedEvents, removeNotification } = useNotifications(events);
 
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
@@ -51,7 +51,7 @@ function App() {
 
       <DialogEventOverlapAlert saveEvent={saveEvent} />
 
-      <NotificationList notifications={notifications} setNotifications={setNotifications} />
+      <NotificationList notifications={notifications} removeNotification={removeNotification} />
     </Box>
   );
 }

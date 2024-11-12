@@ -7,10 +7,10 @@ import { NotificationList } from '../../components/NotificationList';
 import { Notification } from '../../types';
 
 describe('NotificationList', () => {
-  let setNotifications: Mock;
+  let removeNotification: Mock;
 
   beforeEach(() => {
-    setNotifications = vi.fn();
+    removeNotification = vi.fn();
   });
 
   const setup = (notifications: Notification[]) => {
@@ -19,7 +19,7 @@ describe('NotificationList', () => {
     return {
       ...render(
         <ChakraProvider>
-          <NotificationList notifications={notifications} setNotifications={setNotifications} />
+          <NotificationList notifications={notifications} removeNotification={removeNotification} />
         </ChakraProvider>
       ),
       user,
@@ -43,15 +43,16 @@ describe('NotificationList', () => {
     expect(notificationElements).not.toBeInTheDocument();
   });
 
-  it('닫기 버튼 클릭 시 setNotifications가 호출된다', async () => {
+  it('닫기 버튼 클릭 시 removeNotification가 호출된다', async () => {
     const { user, getByTestId } = setup([{ id: '1', message: '알림 1' }]);
 
     await user.click(getByTestId('close-button'));
 
-    expect(setNotifications).toHaveBeenCalledTimes(1);
+    expect(removeNotification).toHaveBeenCalledTimes(1);
   });
 
   it('닫기 버튼 클릭 시 올바른 알림이 제거된다', async () => {
+    const targetIndex = 0;
     const notifications = [
       { id: '1', message: '알림 1' },
       { id: '2', message: '알림 2' },
@@ -59,11 +60,8 @@ describe('NotificationList', () => {
     const { user, getAllByTestId } = setup(notifications);
 
     const closeButtons = getAllByTestId('close-button');
-    await user.click(closeButtons[0]); // 첫 번째 알림의 닫기 버튼 클릭
+    await user.click(closeButtons[targetIndex]); // 첫 번째 알림의 닫기 버튼 클릭
 
-    expect(setNotifications).toHaveBeenCalled();
-    expect(setNotifications.mock.calls[0][0](notifications)).toEqual([
-      { id: '2', message: '알림 2' },
-    ]);
+    expect(removeNotification).toHaveBeenCalledWith(targetIndex);
   });
 });

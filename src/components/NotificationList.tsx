@@ -1,14 +1,13 @@
 import { Alert, AlertIcon, AlertTitle, Box, CloseButton, VStack } from '@chakra-ui/react';
-import React from 'react';
 
 import { Notification } from '../types';
 
 type Props = {
   notifications: Notification[];
-  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+  removeNotification: (index: number) => void;
 };
 
-export const NotificationList = ({ notifications, setNotifications }: Props) => {
+export const NotificationList = ({ notifications, removeNotification }: Props) => {
   return (
     <>
       {notifications.length > 0 && (
@@ -19,10 +18,7 @@ export const NotificationList = ({ notifications, setNotifications }: Props) => 
               <Box flex="1">
                 <AlertTitle fontSize="sm">{notification.message}</AlertTitle>
               </Box>
-              <CloseButton
-                data-testid="close-button"
-                onClick={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
-              />
+              <CloseButton data-testid="close-button" onClick={() => removeNotification(index)} />
             </Alert>
           ))}
         </VStack>
