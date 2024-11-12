@@ -21,8 +21,12 @@ function App() {
 
   const { notifications, notifiedEvents, removeNotification } = useNotifications(events);
 
-  const { view, setView, currentDate, holidays, navigate } = useCalendarView();
-  const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
+  const calendarView = useCalendarView();
+  const { searchTerm, filteredEvents, setSearchTerm } = useSearch(
+    events,
+    calendarView.currentDate,
+    calendarView.view
+  );
 
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
@@ -30,13 +34,9 @@ function App() {
         <EventInputForm events={events} saveEvent={saveEvent} />
 
         <Calendar
-          currentDate={currentDate}
+          {...calendarView}
           filteredEvents={filteredEvents}
-          holidays={holidays}
-          navigate={navigate}
           notifiedEvents={notifiedEvents}
-          setView={setView}
-          view={view}
         />
 
         <EventSearchForm
