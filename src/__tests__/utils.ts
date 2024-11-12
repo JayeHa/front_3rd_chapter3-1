@@ -13,18 +13,7 @@ export const parseHM = (timestamp: number) => {
 };
 
 type BaseEvent = Pick<Event, 'id' | 'title' | 'date'>;
-type OptionalEventProperties = Partial<
-  Pick<
-    Event,
-    | 'startTime'
-    | 'endTime'
-    | 'description'
-    | 'location'
-    | 'category'
-    | 'repeat'
-    | 'notificationTime'
-  >
->;
+type OptionalEventProperties = Partial<Omit<Event, 'id' | 'title' | 'date'>>;
 
 type TestEvent = BaseEvent & OptionalEventProperties;
 
