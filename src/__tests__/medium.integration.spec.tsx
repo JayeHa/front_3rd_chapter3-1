@@ -12,16 +12,8 @@ import { useEventOverlapStore } from '../store/useEventOverlapStore';
 import { Event } from '../types';
 import { generateTestEvent, generateTestEvents } from './utils';
 
-beforeAll(() => {
-  vi.useFakeTimers();
-});
-
 beforeEach(() => {
   vi.setSystemTime(new Date('2024-10-15T09:00'));
-});
-
-afterAll(() => {
-  vi.useRealTimers();
 });
 
 const setup = () => {

@@ -4,16 +4,8 @@ import { act } from 'react';
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { generateTestEvents } from '../utils.ts';
 
-beforeAll(() => {
-  vi.useFakeTimers();
-});
-
 beforeEach(() => {
   vi.setSystemTime(new Date('2024-11-01T09:00'));
-});
-
-afterAll(() => {
-  vi.useRealTimers();
 });
 
 const setup = () =>
