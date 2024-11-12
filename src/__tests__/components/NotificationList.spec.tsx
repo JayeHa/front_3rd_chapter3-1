@@ -1,16 +1,15 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Mock } from 'vitest';
 
 import { NotificationList } from '../../components/NotificationList';
 import { Notification } from '../../types';
 
 describe('NotificationList', () => {
-  let removeNotification: Mock;
+  const removeNotification = vi.fn();
 
   beforeEach(() => {
-    removeNotification = vi.fn();
+    vi.clearAllMocks();
   });
 
   const setup = (notifications: Notification[]) => {
