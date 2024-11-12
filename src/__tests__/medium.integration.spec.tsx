@@ -40,21 +40,17 @@ const saveSchedule = async (
   await user.click(screen.getAllByText(isEdit ? '일정 수정' : '일정 추가')[0]);
 
   await user.clear(screen.getByLabelText('제목'));
-  await user.type(screen.getByLabelText('제목'), title);
-
   await user.clear(screen.getByLabelText('날짜'));
-  await user.type(screen.getByLabelText('날짜'), date);
-
   await user.clear(screen.getByLabelText('시작 시간'));
-  await user.type(screen.getByLabelText('시작 시간'), startTime);
-
   await user.clear(screen.getByLabelText('종료 시간'));
-  await user.type(screen.getByLabelText('종료 시간'), endTime);
-
   await user.clear(screen.getByLabelText('설명'));
-  await user.type(screen.getByLabelText('설명'), description);
-
   await user.clear(screen.getByLabelText('위치'));
+
+  await user.type(screen.getByLabelText('제목'), title);
+  await user.type(screen.getByLabelText('날짜'), date);
+  await user.type(screen.getByLabelText('시작 시간'), startTime);
+  await user.type(screen.getByLabelText('종료 시간'), endTime);
+  await user.type(screen.getByLabelText('설명'), description);
   await user.type(screen.getByLabelText('위치'), location);
 
   await user.selectOptions(screen.getByLabelText('카테고리'), category);
@@ -218,7 +214,7 @@ describe('검색 기능', () => {
         date: '2024-10-30',
       },
       {
-        id: '1',
+        id: '2',
         title: '점심 식사',
         date: '2024-10-30',
       },
@@ -242,7 +238,7 @@ describe('검색 기능', () => {
         date: '2024-10-30',
       },
       {
-        id: '1',
+        id: '2',
         title: '점심 식사',
         date: '2024-10-30',
       },
