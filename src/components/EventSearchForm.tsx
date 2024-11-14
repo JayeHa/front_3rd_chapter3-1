@@ -9,19 +9,13 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React from 'react';
 
 import { notificationOptions } from '../constants/notification';
-import { Event } from '../types';
+import { useSearch } from '../hooks/useSearch';
+import { useEventFormStore } from '../store/useEventFormStore';
 
-type Props = {
-  filteredEvents: Event[];
-  searchTerm: string;
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-
+type Props = ReturnType<typeof useSearch> & {
   notifiedEvents: string[];
-
-  editEvent: (event: Event) => void;
 
   deleteEvent: (id: string) => Promise<void>;
 };
@@ -32,8 +26,9 @@ export const EventSearchForm = ({
   filteredEvents,
   notifiedEvents,
   deleteEvent,
-  editEvent,
 }: Props) => {
+  const { setEditingEvent } = useEventFormStore();
+
   return (
     <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
       <FormControl>
@@ -98,7 +93,7 @@ export const EventSearchForm = ({
                 <IconButton
                   aria-label="Edit event"
                   icon={<EditIcon />}
-                  onClick={() => editEvent(event)}
+                  onClick={() => setEditingEvent(event)}
                 />
                 <IconButton
                   aria-label="Delete event"

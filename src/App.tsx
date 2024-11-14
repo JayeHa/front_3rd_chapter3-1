@@ -12,21 +12,15 @@ import { useSearch } from './hooks/useSearch.ts';
 import { useEventFormStore } from './store/useEventFormStore.ts';
 
 function App() {
-  const { editingEvent, resetEditingEvent, editEvent } = useEventFormStore();
-
+  const { editingEvent, resetEditingEvent } = useEventFormStore();
   const { events, saveEvent, deleteEvent } = useEventOperations(
     Boolean(editingEvent),
     resetEditingEvent
   );
 
-  const { notifications, notifiedEvents, removeNotification } = useNotifications(events);
-
   const calendarView = useCalendarView();
-  const { searchTerm, filteredEvents, setSearchTerm } = useSearch(
-    events,
-    calendarView.currentDate,
-    calendarView.view
-  );
+  const eventSearch = useSearch(events, calendarView.currentDate, calendarView.view);
+  const { notifications, notifiedEvents, removeNotification } = useNotifications(events);
 
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
@@ -35,17 +29,14 @@ function App() {
 
         <Calendar
           {...calendarView}
-          filteredEvents={filteredEvents}
+          filteredEvents={eventSearch.filteredEvents}
           notifiedEvents={notifiedEvents}
         />
 
         <EventSearchForm
+          {...eventSearch}
           deleteEvent={deleteEvent}
-          editEvent={editEvent}
-          filteredEvents={filteredEvents}
           notifiedEvents={notifiedEvents}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
         />
       </Flex>
 

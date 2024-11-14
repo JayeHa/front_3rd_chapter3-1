@@ -21,7 +21,7 @@ interface EventFormState {
   editingEvent: Event | null;
   resetEditingEvent: () => void;
 
-  editEvent: (event: Event) => void;
+  setEditingEvent: (event: Event) => void;
 
   timeErrorRecord: TimeErrorRecord;
   changeStartTime: (startTime: string) => void;
@@ -60,7 +60,7 @@ export const useEventFormStore = create<EventFormState>()((set) => ({
 
   editingEvent: null,
   resetEditingEvent: () => set(() => ({ editingEvent: null })),
-  editEvent: (event) =>
+  setEditingEvent: (event) =>
     set(() => ({
       editingEvent: event,
       eventForm: {
